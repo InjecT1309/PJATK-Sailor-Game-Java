@@ -1,0 +1,6 @@
+3 step play involving ciphers
+http monitor
+name uniqueness
+using lists from agents instead of application (some functionalities
+ work only on 1 pc)
+fix connecting to nonexisting players
