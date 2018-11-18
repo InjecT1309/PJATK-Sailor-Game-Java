@@ -9,7 +9,7 @@ public class AgentManager {
     }
 
     public void start() {
-        System.out.println("Project 1");
+        System.out.println("Sailors Game - SKJ Project");
         printListOfCommands();
         while(true)
             inputLoop();
@@ -63,13 +63,17 @@ public class AgentManager {
         }
     }
     public void agentsPlay(){
-        System.out.println("Enter agent names [name1 name2]");
+        System.out.println("Enter a local agent name, name of agent to play with and your number");
 
         try {
             String agent_names[] = new Scanner(System.in).nextLine().split(" ");
             String agent1 = agent_names[0];
             String agent2 = agent_names[1];
-            agents.get(agent1).play(new PlayRequest(agent1, agent2, (int)(Math.random() * 1000)));
+            try {
+                agents.get(agent1).play(new PlayRequest(agent1, agent2, (int)(Math.random() * 1000)));
+            } catch (NullPointerException e) {
+                System.out.println("No such agent");
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Enter correct input!");
         }
@@ -88,7 +92,7 @@ public class AgentManager {
     public void printListOfCommands() {
         System.out.println("l - get list of agents");
         System.out.println("n - add new agent");
-        System.out.println("p - force 2 agents to play each other");
+        System.out.println("p - play as an agent with another agent");
         System.out.println("r - remove agent");
         System.out.println("h - get list of commands");
         System.out.println("q - quit");

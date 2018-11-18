@@ -43,8 +43,9 @@ public class AgentSendThread extends Thread {
 
             _socket.close();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
     }
     private void sendJoin() throws IOException {
@@ -54,7 +55,12 @@ public class AgentSendThread extends Thread {
         JoinResponse response = new JoinResponse();
         response.readResponse(_in);
 
-        System.out.println(_parent + " recieved: " + response);
+        if(response.agents.isEmpty()) {
+            System.out.println("Cannot join the network, name already taken");
+            return;
+        }
+
+        System.out.println(_parent + " received: " + response);
         for(AgentRecord agent : response.agents) {
             _parent.names_to_agents.put(agent.name, new AgentRecord(agent.name, agent.ip, agent.port));
             _parent.agents_to_matches.put(_parent.names_to_agents.get(agent.name), new ArrayList<>());
@@ -64,19 +70,22 @@ public class AgentSendThread extends Thread {
         System.out.println(_parent + " is sending: " + _request);
         _out.println(_request);
     }
-    private void sendPlay() throws IOException {
+    private void sendPlay() throws Exception {
         PlayRequest play_request = (PlayRequest)_request;
-        int my_number = play_request.number;
         System.out.println(_parent + " is sending: " + _request);
         _out.println(_request);
 
         PlayResponse response = new PlayResponse();
         response.readResponse(_in);
+        System.out.println(_parent + " received: " + response);
 
-        System.out.println(_parent + " recieved: " + response);
+        _out.println(new PlayResponse(_parent.me.name, play_request.player_to, play_request.number));
+
+        MatchOutcome outcome = new MatchOutcome(_parent.me, _parent.names_to_agents.get(play_request.player_to),
+                play_request.number, response.number, ((play_request.number + response.number + 1) % 2) > 0); //start counting from the sender
         if(_parent.names_to_agents.containsKey(response.player_from))
-            _parent.agents_to_matches.get(_parent.names_to_agents.get(response.player_from)).add(
-                    new MatchOutcome(_parent.names_to_agents.get(response.player_from), ((response.number + my_number + 1) % 2) > 0));
+            _parent.agents_to_matches.get(_parent.names_to_agents.get(response.player_from)).add(outcome);
+        System.out.println(outcome);
     }
     private void sendQuit() {
         System.out.println(_parent + " is sending: " + _request);

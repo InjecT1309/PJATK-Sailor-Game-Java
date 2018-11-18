@@ -36,7 +36,7 @@ public class Agent {
             else
                 System.out.println(me + " is a host");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to connect to: " + connect_ip + ":" + connect_port + ". Please remove this agent");
         }
     }
     public void add(AddRequest request) {
@@ -45,7 +45,9 @@ public class Agent {
                 if(!agent.name.equals(request.name))
                     new AgentSendThread(this, new Socket(agent.ip, agent.port), request).start();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Unable to connect to: " + agent + ". Removing it from agent list.");
+                agents_to_matches.remove(agent);
+                names_to_agents.remove(agent.name);
             }
         }
     }
@@ -54,15 +56,33 @@ public class Agent {
         try {
             new AgentSendThread(this, new Socket(agent.ip, agent.port), request).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unable to connect to: " + agent + ". Removing it from agent list.");
+            agents_to_matches.remove(agent);
+            names_to_agents.remove(agent.name);
         }
     }
     public void quit() {
         for(AgentRecord agent : agents_to_matches.keySet()) {
+            if(agents_to_matches.get(agent).isEmpty()) {
+                try {
+                    System.out.println("You cannot leave without playing " + agent + " first. Playing him now.");
+                    new AgentSendThread(this, new Socket(agent.ip, agent.port), new PlayRequest(me.name, agent.name, (int)(Math.random()*1000)));
+                    return;
+                } catch (IOException e) {
+                    System.out.println("Unable to connect to: " + agent + ". Removing it from agent list.");
+                    agents_to_matches.remove(agent);
+                    names_to_agents.remove(agent.name);
+                }
+            }
+        }
+
+        for(AgentRecord agent : agents_to_matches.keySet()) {
             try {
                 new AgentSendThread(this, new Socket(agent.ip, agent.port), new QuitRequest(me.name)).start();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Unable to connect to: " + agent + ". Removing it from agent list.");
+                agents_to_matches.remove(agent);
+                names_to_agents.remove(agent.name);
             }
         }
 
