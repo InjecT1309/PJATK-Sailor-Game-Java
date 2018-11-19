@@ -78,14 +78,19 @@ public class AgentHandleRequestThread extends Thread {
 
         PlayResponse response = new PlayResponse();
         response.readResponse(_in);
+        System.out.println(_parent + " received: " + response);
 
-        if(response.checkHash(request.hash)) {
+        boolean hashes_match = response.checkHash(request.hash);
+        _out.println(new PlayResponse(_parent.me.name, request.player_from, hashes_match ? 1 : 0));
+
+        if(hashes_match) {
             MatchOutcome outcome = new MatchOutcome(_parent.me, _parent.names_to_agents.get(request.player_from),
                     my_number, response.number, ((my_number + response.number) % 2) > 0); //start counting from the sender
             _parent.agents_to_matches.get(_parent.names_to_agents.get(request.player_from)).add(outcome);
             System.out.println(outcome);
-        } else
-            System.out.println("CHEATER");
+        } else {
+            System.out.println("Hashes dont match");
+        }
     }
     private void handleQuit(QuitRequest request) {
         if(!_parent.names_to_agents.containsKey(request.name)) {

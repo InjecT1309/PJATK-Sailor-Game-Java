@@ -67,7 +67,6 @@ public class Agent {
                 try {
                     System.out.println("You cannot leave without playing " + agent + " first. Playing him now.");
                     new AgentSendThread(this, new Socket(agent.ip, agent.port), new PlayRequest(me.name, agent.name, (int)(Math.random()*1000)));
-                    return;
                 } catch (IOException e) {
                     System.out.println("Unable to connect to: " + agent + ". Removing it from agent list.");
                     agents_to_matches.remove(agent);

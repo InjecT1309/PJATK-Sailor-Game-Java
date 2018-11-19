@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.Base64;
 
 public class PlayResponse {
     public String player_from;
@@ -22,12 +21,11 @@ public class PlayResponse {
         number = Integer.parseInt(args[2]);
     }
 
-    public boolean checkHash(byte encoded_hash[]) throws Exception {
+    public boolean checkHash(byte hash[]) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
         digest.update(Integer.toString(number).getBytes());
         byte my_hash[] = digest.digest();
-        byte hash[] = Base64.getDecoder().decode(encoded_hash);
         return Arrays.equals(my_hash, hash);
     }
 
