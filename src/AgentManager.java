@@ -10,6 +10,7 @@ public class AgentManager {
 
     public void start() {
         System.out.println("Sailors Game - SKJ Project");
+        setMonitorAddress();
         printListOfCommands();
         while(true)
             inputLoop();
@@ -28,6 +29,9 @@ public class AgentManager {
                     break;
                 case 'r':
                     removeAgent();
+                    break;
+                case 'm':
+                    setMonitorAddress();
                     break;
                 case 'h':
                     printListOfCommands();
@@ -50,6 +54,7 @@ public class AgentManager {
 
         try {
             String[] args = new Scanner(System.in).nextLine().split(" ");
+            if(args.length != 5) throw new ArrayIndexOutOfBoundsException();
 
             String name = args[0];
             String ip = args[1];
@@ -67,6 +72,8 @@ public class AgentManager {
 
         try {
             String agent_names[] = new Scanner(System.in).nextLine().split(" ");
+            if(agent_names.length != 2) throw new ArrayIndexOutOfBoundsException();
+
             String agent1 = agent_names[0];
             String agent2 = agent_names[1];
             try {
@@ -86,14 +93,19 @@ public class AgentManager {
             agents.get(agent_name).quit();
             agents.remove(agent_name);
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Enter correct input!");
+            System.out.println("No such agent");
         }
+    }
+    public void setMonitorAddress() {
+        System.out.println("Enter monitor ip and port (leave empty if monitor is not running) [ip:port]");
+        Agent.monitor_ip_port = new Scanner(System.in).nextLine();
     }
     public void printListOfCommands() {
         System.out.println("l - get list of agents");
         System.out.println("n - add new agent");
         System.out.println("p - play as an agent with another agent");
         System.out.println("r - remove agent");
+        System.out.println("m - set monitor address");
         System.out.println("h - get list of commands");
         System.out.println("q - quit");
     }

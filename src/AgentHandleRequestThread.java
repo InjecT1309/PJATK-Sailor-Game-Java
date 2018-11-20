@@ -1,7 +1,7 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class AgentHandleRequestThread extends Thread {
@@ -20,6 +20,7 @@ public class AgentHandleRequestThread extends Thread {
         try {
             _in = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
             _out = new PrintWriter(_socket.getOutputStream(), true);
+
             String request = _in.readLine();
             System.out.println(_parent + " recieved " + request);
 
@@ -47,7 +48,7 @@ public class AgentHandleRequestThread extends Thread {
     }
 
     private void handleJoin(JoinRequest request) {
-        if(_parent.names_to_agents.keySet().contains(request.name)) {
+        if(_parent.me.name.equals(request.name) || _parent.names_to_agents.keySet().contains(request.name)) {
             _out.println(); //Username taken
             return;
         }
@@ -88,8 +89,32 @@ public class AgentHandleRequestThread extends Thread {
                     my_number, response.number, ((my_number + response.number) % 2) > 0); //start counting from the sender
             _parent.agents_to_matches.get(_parent.names_to_agents.get(request.player_from)).add(outcome);
             System.out.println(outcome);
+
+            if(Agent.monitor_ip_port != null && !Agent.monitor_ip_port.isEmpty()) {
+                URL url = new URL("http://" + Agent.monitor_ip_port + "/monitor/");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-Length",
+                        Integer.toString(outcome.toString().getBytes().length));
+
+                connection.setDoOutput(true);
+
+                PrintWriter wr = new PrintWriter (
+                        connection.getOutputStream());
+                wr.println(outcome.toString());
+                wr.close();
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(
+                                connection.getInputStream()));
+                System.out.println(in.readLine());
+                in.close();
+
+                connection.disconnect();
+            }
         } else {
-            System.out.println("Hashes dont match");
+            System.out.println("Hashes did not match");
         }
     }
     private void handleQuit(QuitRequest request) {

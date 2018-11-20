@@ -15,6 +15,6 @@ public class MatchOutcome {
 
     @Override
     public String toString() {
-        return me + " - " + my_num + " | " + player + " - " + his_num + " | " + (won ? "won" : "lost");
+        return me + " - " + my_num + " | " + player + " - " + his_num + " | " + (my_num + his_num) + " " + (won ? "won" : "lost");
     }
 }

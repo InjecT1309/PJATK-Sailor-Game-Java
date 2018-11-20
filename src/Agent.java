@@ -1,8 +1,5 @@
 import java.io.IOException;
-import java.net.BindException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +9,8 @@ public class Agent {
     public HashMap<AgentRecord, List<MatchOutcome>> agents_to_matches = new HashMap<>();
     private ServerSocket listen;
     private AgentListenThread listenThread;
+
+    public static String monitor_ip_port;
 
     public Agent(String name, String ip, int port, String connect_ip, int connect_port) {
         try {

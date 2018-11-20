@@ -1,2 +1,0 @@
-fix error when reading hashes
-http monitor

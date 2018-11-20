@@ -96,6 +96,8 @@ public class AgentSendThread extends Thread {
             if (_parent.names_to_agents.containsKey(play_request.player_to))
                 _parent.agents_to_matches.get(_parent.names_to_agents.get(play_request.player_to)).add(outcome);
             System.out.println(outcome);
+        } else {
+            System.out.println("Hashes did not match");
         }
     }
     private void sendQuit() {
